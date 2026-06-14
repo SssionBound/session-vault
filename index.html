@@ -1,340 +1,1077 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SessionVault</title>
-<link rel="icon" type="image/png" href="icon128.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SessionVault – Guarda y restaura tus sesiones</title>
+  <link rel="icon" type="image/png" href="icon128.png">
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
 
-<style>
+    :root {
+      --purple-deep:   #0d0820;
+      --purple-dark:   #120b2f;
+      --purple-mid:    #1b1045;
+      --purple-accent: #7c4dff;
+      --purple-light:  #9b6bff;
+      --purple-glow:   rgba(124,77,255,0.45);
+      --glass-bg:      rgba(255,255,255,0.06);
+      --glass-border:  rgba(255,255,255,0.12);
+      --text-main:     #f0eeff;
+      --text-muted:    #b8b0d8;
+      --text-dim:      #7a7299;
+    }
 
-html{
-    scroll-behavior:smooth;
-}
+    body {
+      background: var(--purple-dark);
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+    /* ── CANVAS BACKGROUND ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-body{
-    background:linear-gradient(135deg,#120b2f 0%,#1b1045 100%);
-    color:white;
-    font-family:Arial,sans-serif;
-    text-align:center;
-    min-height:100vh;
-}
+    /* ── EVERYTHING ABOVE CANVAS ── */
+    .site-wrapper { position: relative; z-index: 1; }
 
-.navbar{
-    position:sticky;
-    top:0;
-    z-index:1000;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:20px 50px;
-    background:rgba(10,10,25,0.75);
-    backdrop-filter:blur(15px);
-}
+    /* ── NAVBAR ── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 60px;
+      background: rgba(10, 8, 28, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      transition: padding 0.3s;
+    }
 
-.nav-logo{
-    font-size:28px;
-    font-weight:bold;
-    color:#9b6bff;
-}
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-main);
+      text-decoration: none;
+    }
 
-.nav-links a{
-    color:white;
-    text-decoration:none;
-    margin-left:25px;
-    transition:0.3s;
-}
+    .nav-logo .logo-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--purple-accent);
+      box-shadow: 0 0 10px var(--purple-accent);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+    }
 
-.nav-links a:hover{
-    color:#9b6bff;
-}
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 8px var(--purple-accent); }
+      50%       { transform: scale(1.4); box-shadow: 0 0 18px var(--purple-light); }
+    }
 
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:60px 20px;
-}
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-.logo{
-    width:128px;
-    border-radius:50%;
-    box-shadow:0 0 40px rgba(124,77,255,0.8);
-    margin-bottom:20px;
-    transition:0.3s;
-}
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 8px;
+      transition: color 0.25s, background 0.25s;
+    }
 
-.logo:hover{
-    transform:scale(1.08);
-}
+    .nav-links a:hover {
+      color: var(--text-main);
+      background: var(--glass-bg);
+    }
 
-h1{
-    font-size:65px;
-    margin-bottom:15px;
-}
+    .nav-cta {
+      background: linear-gradient(135deg, var(--purple-accent), var(--purple-light)) !important;
+      color: white !important;
+      padding: 8px 20px !important;
+      border-radius: 10px !important;
+    }
 
-.subtitle{
-    font-size:24px;
-    color:#d5d5d5;
-    margin-bottom:15px;
-}
+    .nav-cta:hover {
+      box-shadow: 0 0 20px var(--purple-glow);
+      background: linear-gradient(135deg, var(--purple-light), var(--purple-accent)) !important;
+    }
 
-.description{
-    font-size:18px;
-    color:#cfcfcf;
-    max-width:750px;
-    margin:auto;
-    line-height:1.8;
-}
+    /* ── SECTIONS (scroll-reveal) ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.75s cubic-bezier(.22,1,.36,1),
+                  transform 0.75s cubic-bezier(.22,1,.36,1);
+    }
 
-.button{
-    display:inline-block;
-    margin-top:35px;
-    padding:18px 40px;
-    border-radius:12px;
-    text-decoration:none;
-    background:linear-gradient(90deg,#7c4dff,#9b6bff);
-    color:white;
-    font-size:18px;
-    font-weight:bold;
-    transition:0.3s;
-}
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal.delay-1 { transition-delay: 0.1s; }
+    .reveal.delay-2 { transition-delay: 0.2s; }
+    .reveal.delay-3 { transition-delay: 0.3s; }
+    .reveal.delay-4 { transition-delay: 0.4s; }
 
-.button:hover{
-    transform:translateY(-5px);
-    box-shadow:0 0 30px rgba(124,77,255,0.5);
-}
+    /* ── HERO ── */
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 110px 24px 80px;
+      text-align: center;
+    }
 
-.features{
-    margin-top:90px;
-    display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
-    gap:25px;
-}
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 100px;
+      background: rgba(124,77,255,0.15);
+      border: 1px solid rgba(124,77,255,0.35);
+      font-size: 13px;
+      color: var(--purple-light);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 36px;
+    }
 
-.card{
-    width:300px;
-    padding:30px;
-    border-radius:20px;
-    background:rgba(255,255,255,0.08);
-    border:1px solid rgba(255,255,255,0.1);
-    backdrop-filter:blur(10px);
-    transition:0.3s;
-}
+    .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--purple-light); display: inline-block; animation: pulse-dot 2s ease-in-out infinite; }
 
-.card:hover{
-    transform:translateY(-10px);
-    box-shadow:0 15px 40px rgba(124,77,255,0.35);
-}
+    .logo-img {
+      width: 110px;
+      border-radius: 28px;
+      box-shadow: 0 0 60px rgba(124,77,255,0.55), 0 0 120px rgba(124,77,255,0.2);
+      margin-bottom: 32px;
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), box-shadow 0.4s;
+    }
 
-.card h3{
-    margin-bottom:15px;
-    font-size:24px;
-}
+    .logo-img:hover {
+      transform: scale(1.08) rotate(-2deg);
+      box-shadow: 0 0 80px rgba(155,107,255,0.7), 0 0 160px rgba(124,77,255,0.3);
+    }
 
-.card p{
-    color:#d7d7d7;
-    line-height:1.7;
-}
+    h1 {
+      font-size: clamp(44px, 8vw, 78px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #ffffff 30%, #c4a8ff 70%, #7c4dff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+    }
 
-.stats{
-    margin-top:100px;
-    display:flex;
-    justify-content:center;
-    gap:80px;
-    flex-wrap:wrap;
-}
+    .subtitle {
+      font-size: clamp(17px, 2.5vw, 22px);
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
 
-.stat h2{
-    font-size:46px;
-    color:#9b6bff;
-}
+    .description {
+      font-size: 17px;
+      color: var(--text-dim);
+      max-width: 680px;
+      margin: 0 auto 40px;
+      line-height: 1.85;
+    }
 
-.stat p{
-    color:#d7d7d7;
-}
+    /* ── CTA BUTTON ── */
+    .btn-primary {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--purple-accent), var(--purple-light));
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      text-decoration: none;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s;
+    }
 
-.gallery{
-    margin-top:120px;
-}
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -75%;
+      width: 50%;
+      height: 200%;
+      background: rgba(255,255,255,0.25);
+      transform: skewX(-20deg);
+      animation: btn-shine 3s ease-in-out infinite;
+    }
 
-.gallery h2{
-    font-size:42px;
-    margin-bottom:40px;
-}
+    @keyframes btn-shine {
+      0%   { left: -75%; }
+      40%  { left: 125%; }
+      100% { left: 125%; }
+    }
 
-.gallery-grid{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:30px;
-}
+    .btn-primary:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 50px rgba(124,77,255,0.55), 0 0 0 1px rgba(155,107,255,0.4);
+    }
 
-.gallery-grid img{
-    width:330px;
-    border-radius:20px;
-    transition:0.4s;
-    box-shadow:0 0 25px rgba(124,77,255,0.3);
-}
+    /* ── CONTAINER ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-.gallery-grid img:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 40px rgba(124,77,255,0.7);
-}
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--purple-light);
+      margin-bottom: 14px;
+    }
 
-.why{
-    margin-top:120px;
-}
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
 
-.why h2{
-    font-size:42px;
-    margin-bottom:25px;
-}
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 17px;
+      max-width: 600px;
+      margin: 0 auto 56px;
+      line-height: 1.7;
+    }
 
-.why p{
-    max-width:850px;
-    margin:auto;
-    line-height:1.9;
-    color:#d7d7d7;
-    font-size:18px;
-}
+    /* ── FEATURE CARDS ── */
+    .features-section {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
 
-.footer{
-    margin-top:120px;
-    padding:40px;
-    border-top:1px solid rgba(255,255,255,0.1);
-    color:#999;
-}
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 0;
+    }
 
-@media(max-width:768px){
+    .card {
+      padding: 36px 32px;
+      border-radius: 22px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      text-align: left;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s, border-color 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
 
-.navbar{
-    flex-direction:column;
-    gap:15px;
-}
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(124,77,255,0.12), transparent 65%);
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
 
-h1{
-    font-size:45px;
-}
+    .card:hover::before { opacity: 1; }
 
-.gallery-grid img{
-    width:95%;
-}
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 24px 60px rgba(124,77,255,0.28), 0 0 0 1px rgba(155,107,255,0.25);
+      border-color: rgba(155,107,255,0.35);
+    }
 
-}
+    .card-icon {
+      font-size: 36px;
+      margin-bottom: 18px;
+      display: inline-block;
+    }
 
-</style>
+    .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+    .card p  { color: var(--text-muted); line-height: 1.75; font-size: 15px; }
+
+    /* ── STATS ── */
+    .stats-section {
+      padding: 60px 0 80px;
+    }
+
+    .stats-inner {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: wrap;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .stat-item {
+      flex: 1;
+      min-width: 180px;
+      padding: 44px 24px;
+      text-align: center;
+      border-right: 1px solid var(--glass-border);
+      transition: background 0.3s;
+    }
+
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: rgba(124,77,255,0.08); }
+
+    .stat-item h2 {
+      font-size: 50px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--purple-light), #c4a8ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-item p { color: var(--text-muted); font-size: 14px; font-weight: 500; }
+
+    /* ── GALLERY ── */
+    .gallery-section {
+      padding: 60px 0 80px;
+      text-align: center;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), box-shadow 0.4s, border-color 0.4s;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 30px 80px rgba(124,77,255,0.4);
+      border-color: rgba(155,107,255,0.5);
+    }
+
+    .gallery-item::after {
+      content: '🔍';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 32px;
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+    }
+
+    .gallery-item:hover::after { transform: translate(-50%, -50%) scale(1); }
+
+    .gallery-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+
+    .gallery-item:hover img { opacity: 0.6; }
+
+    /* ── ADVANTAGES ── */
+    .advantages-section {
+      padding: 60px 0 80px;
+      text-align: center;
+    }
+
+    .advantages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .adv-card {
+      padding: 40px 28px 36px;
+      border-radius: 20px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      text-align: center;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s, border-color 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .adv-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--purple-accent), var(--purple-light));
+      transform: scaleX(0);
+      transition: transform 0.35s;
+    }
+
+    .adv-card:hover::after { transform: scaleX(1); }
+
+    .adv-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(124,77,255,0.3);
+      border-color: rgba(155,107,255,0.3);
+    }
+
+    .adv-icon {
+      font-size: 44px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .adv-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    .adv-card p  { color: var(--text-muted); font-size: 14px; line-height: 1.7; }
+
+    /* ── WHY ── */
+    .why-section {
+      padding: 60px 0 80px;
+      text-align: center;
+    }
+
+    .why-box {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 52px 56px;
+      border-radius: 28px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .why-box::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,77,255,0.25), transparent 70%);
+      pointer-events: none;
+    }
+
+    .why-box p {
+      color: var(--text-muted);
+      font-size: 17px;
+      line-height: 1.9;
+      position: relative;
+    }
+
+    /* ── FAQ ── */
+    .faq-section {
+      padding: 60px 0 80px;
+      text-align: center;
+    }
+
+    .faq-list {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .faq-item {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .faq-item.open { border-color: rgba(155,107,255,0.4); }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 22px 28px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      transition: color 0.25s;
+    }
+
+    .faq-question:hover { color: var(--purple-light); }
+
+    .faq-icon {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: rgba(124,77,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      transition: transform 0.35s, background 0.25s;
+      color: var(--purple-light);
+      line-height: 1;
+    }
+
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(124,77,255,0.3); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(.4,0,.2,1), padding 0.3s;
+    }
+
+    .faq-answer-inner {
+      padding: 0 28px 24px;
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.8;
+      text-align: left;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 40px;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(10,8,28,0.5);
+      backdrop-filter: blur(12px);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      text-align: left;
+    }
+
+    .footer-brand .brand-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .footer-brand p { color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+
+    .footer-col h4 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+      transition: color 0.25s, padding-left 0.25s;
+    }
+
+    .footer-col a:hover { color: var(--purple-light); padding-left: 6px; }
+
+    .footer-bottom {
+      border-top: 1px solid var(--glass-border);
+      padding: 20px 24px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    /* ── MOBILE NAV TOGGLE ── */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--text-main);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .navbar { padding: 14px 20px; }
+      .nav-toggle { display: flex; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        flex-direction: column;
+        background: rgba(10,8,28,0.96);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 16px;
+        gap: 4px;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { width: 100%; }
+      .hero { padding: 80px 20px 60px; }
+      .stats-inner { flex-direction: column; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--glass-border); }
+      .stat-item:last-child { border-bottom: none; }
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .why-box { padding: 36px 28px; }
+    }
+
+    @media (max-width: 480px) {
+      .features-grid, .advantages-grid, .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn-primary { width: 100%; justify-content: center; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="navbar">
+<!-- Animated background canvas -->
+<canvas id="bg-canvas"></canvas>
 
-<div class="nav-logo">
-SessionVault
-</div>
+<div class="site-wrapper">
 
-<div class="nav-links">
-<a href="#features">Características</a>
-<a href="#capturas">Capturas</a>
-<a href="#porque">¿Por qué?</a>
-</div>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="#" class="nav-logo">
+      <span class="logo-dot"></span>
+      SessionVault
+    </a>
+    <div class="nav-toggle" id="nav-toggle" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <a href="#features">Características</a>
+      <a href="#ventajas">Ventajas</a>
+      <a href="#capturas">Capturas</a>
+      <a href="#faq">FAQ</a>
+      <a href="#" class="nav-cta">Próximamente</a>
+    </div>
+  </nav>
 
-</div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge reveal">
+      <span></span> Extensión para Chrome &amp; Edge
+    </div>
+    <img src="icon128.png" class="logo-img reveal delay-1" alt="SessionVault logo">
+    <h1 class="reveal delay-2">SessionVault</h1>
+    <p class="subtitle reveal delay-3">Guarda y restaura tus sesiones en segundos.</p>
+    <p class="description reveal delay-4">
+      SessionVault te permite guardar grupos completos de pestañas para recuperarlos cuando quieras.
+      Ideal para estudiantes, investigadores, desarrolladores y profesionales que trabajan con múltiples proyectos.
+    </p>
+    <a class="btn-primary reveal delay-4" href="#">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v14m0 0l-4-4m4 4l4-4M2 17v3a2 2 0 002 2h16a2 2 0 002-2v-3"/></svg>
+      Disponible próximamente en Chrome Web Store
+    </a>
+  </section>
 
-<div class="container">
+  <!-- FEATURE CARDS -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <p class="section-label reveal">Funcionalidades</p>
+      <h2 class="section-title reveal">Todo lo que necesitas</h2>
+      <p class="section-subtitle reveal">Sin complicaciones. Sin registro. Solo guarda, restaura y trabaja.</p>
+      <div class="features-grid">
+        <div class="card reveal delay-1">
+          <span class="card-icon">🔒</span>
+          <h3>Guarda sesiones</h3>
+          <p>Almacena grupos completos de pestañas y recupéralos exactamente cuando los necesites, sin perder ninguna.</p>
+        </div>
+        <div class="card reveal delay-2">
+          <span class="card-icon">💾</span>
+          <h3>Restauración rápida</h3>
+          <p>Vuelve al punto exacto donde lo dejaste con un solo clic. Tu flujo de trabajo, intacto.</p>
+        </div>
+        <div class="card reveal delay-3">
+          <span class="card-icon">⚡</span>
+          <h3>Más productividad</h3>
+          <p>Mantén organizados tus proyectos, estudios e investigaciones sin perder tiempo buscando pestañas perdidas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<img src="icon128.png" class="logo">
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-inner reveal">
+        <div class="stat-item">
+          <h2>1 Clic</h2>
+          <p>Para restaurar una sesión</p>
+        </div>
+        <div class="stat-item">
+          <h2>∞</h2>
+          <p>Sesiones guardadas</p>
+        </div>
+        <div class="stat-item">
+          <h2>100%</h2>
+          <p>Gratuito</p>
+        </div>
+        <div class="stat-item">
+          <h2>0</h2>
+          <p>Datos en servidores</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<h1>SessionVault</h1>
+  <!-- ADVANTAGES -->
+  <section class="advantages-section" id="ventajas">
+    <div class="container">
+      <p class="section-label reveal">Por qué elegirlo</p>
+      <h2 class="section-title reveal">Diseñado para ti</h2>
+      <p class="section-subtitle reveal">Cuatro pilares que hacen de SessionVault una herramienta diferente.</p>
+      <div class="advantages-grid">
+        <div class="adv-card reveal delay-1">
+          <span class="adv-icon">🛡️</span>
+          <h3>Privacidad total</h3>
+          <p>Tus sesiones se guardan localmente en tu navegador. Ningún dato sale de tu dispositivo.</p>
+        </div>
+        <div class="adv-card reveal delay-2">
+          <span class="adv-icon">🚀</span>
+          <h3>Rapidez extrema</h3>
+          <p>Guarda o restaura decenas de pestañas en menos de un segundo. Sin esperas, sin carga.</p>
+        </div>
+        <div class="adv-card reveal delay-3">
+          <span class="adv-icon">🗂️</span>
+          <h3>Organización clara</h3>
+          <p>Nombra y organiza tus sesiones por proyecto, tema o momento. Todo siempre a mano.</p>
+        </div>
+        <div class="adv-card reveal delay-4">
+          <span class="adv-icon">✨</span>
+          <h3>Simplicidad real</h3>
+          <p>Sin registros, sin cuentas, sin configuración. Instala y empieza a usarlo en segundos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<p class="subtitle">
-Organiza, guarda y restaura tus sesiones en segundos.
-</p>
+  <!-- GALLERY -->
+  <section class="gallery-section" id="capturas">
+    <div class="container">
+      <p class="section-label reveal">Capturas reales</p>
+      <h2 class="section-title reveal">Ve SessionVault en acción</h2>
+      <p class="section-subtitle reveal">Así luce la extensión directamente en tu navegador.</p>
+      <div class="gallery-grid">
+        <div class="gallery-item reveal delay-1">
+          <img src="Captura de Extension 1.png" alt="SessionVault – vista principal">
+        </div>
+        <div class="gallery-item reveal delay-2">
+          <img src="Captura Extension 2.png" alt="SessionVault – guardar sesión">
+        </div>
+        <div class="gallery-item reveal delay-3">
+          <img src="Captura Extension 3.png" alt="SessionVault – restaurar sesión">
+        </div>
+      </div>
+    </div>
+  </section>
 
-<p class="description">
-SessionVault te permite guardar grupos completos de pestañas para recuperarlos cuando quieras. Ideal para estudiantes, investigadores, desarrolladores y profesionales que trabajan con múltiples proyectos.
-</p>
+  <!-- WHY -->
+  <section class="why-section" id="porque">
+    <div class="container">
+      <p class="section-label reveal">¿Por qué SessionVault?</p>
+      <h2 class="section-title reveal">Tu flujo de trabajo, protegido</h2>
+      <div class="why-box reveal">
+        <p>
+          Muchas veces cerramos ventanas importantes por error o acumulamos decenas de pestañas para un proyecto sin saber cómo organizarlas.
+          SessionVault resuelve este problema de raíz: guarda sesiones completas para restaurarlas más tarde con un solo clic,
+          manteniendo tu trabajo organizado y evitando perder tiempo buscando nuevamente todas tus páginas.
+          Sin servidores externos, sin registro obligatorio, solo una herramienta rápida y privada que hace exactamente lo que promete.
+        </p>
+      </div>
+    </div>
+  </section>
 
-<a class="button" href="#">
-Disponible próximamente en Chrome Web Store
-</a>
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <p class="section-label reveal">Preguntas frecuentes</p>
+      <h2 class="section-title reveal">¿Tienes dudas?</h2>
+      <p class="section-subtitle reveal">Resolvemos las más habituales aquí.</p>
+      <div class="faq-list">
 
-<div class="features" id="features">
+        <div class="faq-item reveal delay-1">
+          <button class="faq-question" aria-expanded="false">
+            ¿Cómo funciona SessionVault?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              SessionVault detecta las pestañas abiertas en tu navegador y te permite guardarlas como un grupo con nombre personalizado.
+              Cuando quieras recuperarlas, selecciona la sesión guardada y la extensión las abre todas automáticamente. Es así de sencillo.
+            </div>
+          </div>
+        </div>
 
-<div class="card">
-<h3>🔒 Guarda sesiones</h3>
-<p>Almacena grupos completos de pestañas y recupéralos cuando los necesites.</p>
-</div>
+        <div class="faq-item reveal delay-2">
+          <button class="faq-question" aria-expanded="false">
+            ¿Es gratuito?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              Sí, SessionVault es completamente gratuito. Puedes guardar sesiones ilimitadas sin ningún coste.
+              En el futuro podrían añadirse funciones Premium opcionales, pero el núcleo siempre será gratis.
+            </div>
+          </div>
+        </div>
 
-<div class="card">
-<h3>💾 Restauración rápida</h3>
-<p>Vuelve exactamente al punto donde lo dejaste con un solo clic.</p>
-</div>
+        <div class="faq-item reveal delay-3">
+          <button class="faq-question" aria-expanded="false">
+            ¿Dónde se guardan las sesiones?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              Todas tus sesiones se almacenan localmente en el almacenamiento del propio navegador (<code>chrome.storage.local</code>).
+              Ningún dato se envía a servidores externos. Tu privacidad está completamente garantizada.
+            </div>
+          </div>
+        </div>
 
-<div class="card">
-<h3>⚡ Más productividad</h3>
-<p>Mantén organizados tus proyectos, estudios e investigaciones.</p>
-</div>
+        <div class="faq-item reveal delay-4">
+          <button class="faq-question" aria-expanded="false">
+            ¿Habrá funciones Premium?
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer" role="region">
+            <div class="faq-answer-inner">
+              Estamos explorando funciones avanzadas como sincronización entre dispositivos, exportar/importar sesiones y etiquetado por categorías.
+              Aún no hay fecha confirmada, pero la versión base siempre será gratuita y sin límites.
+            </div>
+          </div>
+        </div>
 
-</div>
+      </div>
+    </div>
+  </section>
 
-<div class="stats">
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-name">SessionVault</div>
+        <p>Extensión para Chrome y Edge que te permite guardar y restaurar grupos de pestañas con un solo clic.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Producto</h4>
+        <a href="#features">Características</a>
+        <a href="#ventajas">Ventajas</a>
+        <a href="#capturas">Capturas</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal &amp; Contacto</h4>
+        <a href="mailto:info@sessionvault.app">Contacto</a>
+        <a href="#">Política de privacidad</a>
+        <a href="#">Términos de uso</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2026 SessionVault · Hecho con 💜 para la productividad real.
+    </div>
+  </footer>
 
-<div class="stat">
-<h2>1 Click</h2>
-<p>Para restaurar una sesión</p>
-</div>
+</div><!-- /site-wrapper -->
 
-<div class="stat">
-<h2>∞</h2>
-<p>Sesiones guardadas</p>
-</div>
+<script>
+/* ── ANIMATED PARTICLE BACKGROUND ── */
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
 
-<div class="stat">
-<h2>100%</h2>
-<p>Gratuito</p>
-</div>
+  const COLORS = ['rgba(124,77,255,', 'rgba(155,107,255,', 'rgba(200,170,255,'];
 
-</div>
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
 
-<div class="gallery" id="capturas">
+  function Particle() {
+    this.reset();
+  }
 
-<h2>Capturas reales de la extensión</h2>
+  Particle.prototype.reset = function () {
+    this.x    = Math.random() * W;
+    this.y    = Math.random() * H;
+    this.r    = Math.random() * 2.5 + 0.5;
+    this.vx   = (Math.random() - 0.5) * 0.35;
+    this.vy   = (Math.random() - 0.5) * 0.35;
+    this.alpha= Math.random() * 0.55 + 0.1;
+    this.color= COLORS[Math.floor(Math.random() * COLORS.length)];
+  };
 
-<div class="gallery-grid">
+  Particle.prototype.update = function () {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < -10 || this.x > W + 10 || this.y < -10 || this.y > H + 10) this.reset();
+  };
 
-<img src="Captura de Extension 1.png">
+  Particle.prototype.draw = function () {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = this.color + this.alpha + ')';
+    ctx.fill();
+  };
 
-<img src="Captura Extension 2.png">
+  function initParticles(n) {
+    particles = [];
+    for (let i = 0; i < n; i++) particles.push(new Particle());
+  }
 
-<img src="Captura Extension 3.png">
+  /* Glowing orbs */
+  const orbs = [
+    { x: 0.15, y: 0.2,  r: 280, color: 'rgba(124,77,255,' },
+    { x: 0.85, y: 0.7,  r: 240, color: 'rgba(155,107,255,' },
+    { x: 0.5,  y: 1.05, r: 200, color: 'rgba(100,60,220,' },
+  ];
 
-</div>
+  function drawOrbs() {
+    orbs.forEach(o => {
+      const grd = ctx.createRadialGradient(o.x * W, o.y * H, 0, o.x * W, o.y * H, o.r);
+      grd.addColorStop(0, o.color + '0.10)');
+      grd.addColorStop(1, o.color + '0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, W, H);
+    });
+  }
 
-</div>
+  let raf;
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    drawOrbs();
+    particles.forEach(p => { p.update(); p.draw(); });
 
-<div class="why" id="porque">
+    /* Connection lines */
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(124,77,255,' + (0.12 * (1 - dist / 120)) + ')';
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
+        }
+      }
+    }
+    raf = requestAnimationFrame(loop);
+  }
 
-<h2>¿Por qué usar SessionVault?</h2>
+  resize();
+  initParticles(90);
+  loop();
 
-<p>
-Muchas veces cerramos ventanas importantes por error o tenemos decenas de pestañas abiertas para un proyecto. SessionVault permite guardar sesiones completas para restaurarlas más tarde con un solo clic, manteniendo tu trabajo organizado y evitando perder tiempo buscando nuevamente todas tus páginas.
-</p>
+  window.addEventListener('resize', () => {
+    resize();
+    initParticles(90);
+  });
 
-</div>
+  /* Respect reduced motion */
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    cancelAnimationFrame(raf);
+    ctx.clearRect(0, 0, W, H);
+    drawOrbs();
+  }
+})();
 
-<div class="footer">
-© 2026 SessionVault · Diseñado para productividad y organización.
-</div>
+/* ── SCROLL REVEAL ── */
+(function () {
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  items.forEach(el => io.observe(el));
+})();
 
-</div>
+/* ── MOBILE NAV ── */
+(function () {
+  const toggle = document.getElementById('nav-toggle');
+  const links  = document.getElementById('nav-links');
+  toggle.addEventListener('click', () => links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+})();
 
+/* ── FAQ ACCORDION ── */
+(function () {
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const item   = this.closest('.faq-item');
+      const answer = item.querySelector('.faq-answer');
+      const isOpen = item.classList.contains('open');
+
+      /* Close all */
+      document.querySelectorAll('.faq-item').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.faq-answer').style.maxHeight = '0';
+        el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+
+      if (!isOpen) {
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        this.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>
