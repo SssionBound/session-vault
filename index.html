@@ -7,95 +7,185 @@
 <link rel="icon" type="image/png" href="icon128.png">
 
 <style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    background:linear-gradient(135deg, #120b2f 0%, #1b1045 100%);
+    background:linear-gradient(135deg,#120b2f 0%,#1b1045 100%);
     color:white;
     font-family:Arial,sans-serif;
     text-align:center;
-    padding:50px;
     min-height:100vh;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:50px 20px;
 }
 
 .logo{
     width:128px;
     border-radius:50%;
-    box-shadow:0 0 30px rgba(124,77,255,0.6);
+    box-shadow:0 0 40px rgba(124,77,255,0.8);
+    margin-bottom:20px;
+}
+
+h1{
+    font-size:60px;
+    margin-bottom:15px;
+}
+
+.subtitle{
+    font-size:22px;
+    color:#d5d5d5;
+    margin-bottom:15px;
+}
+
+.description{
+    font-size:18px;
+    color:#bfbfbf;
+    max-width:700px;
+    margin:auto;
+    line-height:1.7;
 }
 
 .button{
     display:inline-block;
-    background:#7c4dff;
-    color:white;
-    padding:15px 30px;
-    border-radius:10px;
+    margin-top:35px;
+    padding:18px 40px;
+    border-radius:12px;
     text-decoration:none;
-    margin-top:20px;
+    background:linear-gradient(90deg,#7c4dff,#9b6bff);
+    color:white;
+    font-size:18px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.button:hover{
+    transform:translateY(-3px);
 }
 
 .features{
-    margin-top:60px;
+    margin-top:90px;
     display:flex;
     justify-content:center;
-    gap:25px;
     flex-wrap:wrap;
+    gap:25px;
 }
 
 .card{
+    width:300px;
+    padding:30px;
+    border-radius:20px;
     background:rgba(255,255,255,0.08);
     border:1px solid rgba(255,255,255,0.1);
-    border-radius:20px;
-    width:280px;
-    padding:25px;
     backdrop-filter:blur(10px);
     box-shadow:0 8px 25px rgba(0,0,0,0.25);
 }
 
 .card h3{
     margin-bottom:15px;
+    font-size:24px;
 }
 
 .card p{
-    line-height:1.6;
-    color:#d9d9d9;
+    color:#d7d7d7;
+    line-height:1.7;
 }
+
+.stats{
+    margin-top:90px;
+    display:flex;
+    justify-content:center;
+    gap:80px;
+    flex-wrap:wrap;
+}
+
+.stat h2{
+    font-size:42px;
+    color:#9b6bff;
+}
+
+.stat p{
+    color:#cfcfcf;
+}
+
+.footer{
+    margin-top:100px;
+    color:#999;
+    font-size:14px;
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="container">
+
 <img src="icon128.png" class="logo">
 
 <h1>SessionVault</h1>
 
-<p>
-Guarda y restaura sesiones completas del navegador con un solo clic.
+<p class="subtitle">
+Organiza, guarda y restaura tus sesiones en segundos.
 </p>
 
-<p>
-Nunca pierdas una sesión importante de trabajo,
-estudio o investigación.
+<p class="description">
+SessionVault te permite guardar grupos completos de pestañas para recuperarlos cuando quieras. Ideal para estudiantes, investigadores, desarrolladores y profesionales que trabajan con múltiples proyectos.
 </p>
 
 <a class="button" href="#">
-Disponible en Chrome Web Store próximamente
+Disponible próximamente en Chrome Web Store
 </a>
 
 <div class="features">
 
     <div class="card">
         <h3>🔒 Guarda sesiones</h3>
-        <p>Almacena grupos completos de pestañas para recuperarlos cuando quieras.</p>
+        <p>Almacena grupos completos de pestañas y recupéralos cuando los necesites.</p>
     </div>
 
     <div class="card">
-        <h3>💾 Restauración instantánea</h3>
-        <p>Recupera todas tus pestañas con un solo clic y continúa donde lo dejaste.</p>
+        <h3>💾 Restauración rápida</h3>
+        <p>Vuelve exactamente al punto donde lo dejaste con un solo clic.</p>
     </div>
 
     <div class="card">
         <h3>⚡ Más productividad</h3>
         <p>Mantén organizados tus proyectos, estudios e investigaciones.</p>
     </div>
+
+</div>
+
+<div class="stats">
+
+    <div class="stat">
+        <h2>1 Click</h2>
+        <p>Para restaurar una sesión</p>
+    </div>
+
+    <div class="stat">
+        <h2>∞</h2>
+        <p>Sesiones guardadas</p>
+    </div>
+
+    <div class="stat">
+        <h2>100%</h2>
+        <p>Gratuito</p>
+    </div>
+
+</div>
+
+<div class="footer">
+    © 2026 SessionVault. Todos los derechos reservados.
+</div>
 
 </div>
 
