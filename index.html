@@ -8,6 +8,10 @@
 
 <style>
 
+html{
+    scroll-behavior:smooth;
+}
+
 *{
     margin:0;
     padding:0;
@@ -22,6 +26,33 @@ body{
     min-height:100vh;
 }
 
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:25px 50px;
+    background:rgba(0,0,0,0.15);
+    backdrop-filter:blur(10px);
+}
+
+.nav-logo{
+    font-size:26px;
+    font-weight:bold;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    margin-left:25px;
+    opacity:0.8;
+    transition:0.3s;
+}
+
+.nav-links a:hover{
+    opacity:1;
+    color:#9b6bff;
+}
+
 .container{
     max-width:1200px;
     margin:auto;
@@ -33,6 +64,11 @@ body{
     border-radius:50%;
     box-shadow:0 0 40px rgba(124,77,255,0.8);
     margin-bottom:20px;
+    transition:0.3s;
+}
+
+.logo:hover{
+    transform:scale(1.08);
 }
 
 h1{
@@ -68,7 +104,8 @@ h1{
 }
 
 .button:hover{
-    transform:translateY(-3px);
+    transform:translateY(-5px);
+    box-shadow:0 0 25px rgba(124,77,255,0.5);
 }
 
 .features{
@@ -87,6 +124,12 @@ h1{
     border:1px solid rgba(255,255,255,0.1);
     backdrop-filter:blur(10px);
     box-shadow:0 8px 25px rgba(0,0,0,0.25);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-10px);
+    box-shadow:0 15px 40px rgba(124,77,255,0.3);
 }
 
 .card h3{
@@ -116,16 +159,62 @@ h1{
     color:#cfcfcf;
 }
 
+.screenshot{
+    margin-top:120px;
+}
+
+.screenshot h2{
+    font-size:40px;
+    margin-bottom:20px;
+}
+
+.preview-box{
+    background:rgba(255,255,255,0.08);
+    border-radius:25px;
+    padding:40px;
+    max-width:700px;
+    margin:auto;
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(10px);
+}
+
+.preview-box img{
+    width:200px;
+    border-radius:20px;
+    box-shadow:0 0 35px rgba(124,77,255,0.5);
+}
+
+.preview-box p{
+    margin-top:25px;
+    color:#d7d7d7;
+    line-height:1.7;
+}
+
 .footer{
-    margin-top:100px;
+    margin-top:120px;
     color:#999;
     font-size:14px;
+    padding-bottom:40px;
 }
 
 </style>
 </head>
 
 <body>
+
+<div class="navbar">
+
+    <div class="nav-logo">
+        SessionVault
+    </div>
+
+    <div class="nav-links">
+        <a href="#features">Características</a>
+        <a href="#preview">Vista previa</a>
+        <a href="#download">Descarga</a>
+    </div>
+
+</div>
 
 <div class="container">
 
@@ -141,11 +230,11 @@ Organiza, guarda y restaura tus sesiones en segundos.
 SessionVault te permite guardar grupos completos de pestañas para recuperarlos cuando quieras. Ideal para estudiantes, investigadores, desarrolladores y profesionales que trabajan con múltiples proyectos.
 </p>
 
-<a class="button" href="#">
+<a class="button" id="download" href="#">
 Disponible próximamente en Chrome Web Store
 </a>
 
-<div class="features">
+<div class="features" id="features">
 
     <div class="card">
         <h3>🔒 Guarda sesiones</h3>
@@ -179,6 +268,22 @@ Disponible próximamente en Chrome Web Store
     <div class="stat">
         <h2>100%</h2>
         <p>Gratuito</p>
+    </div>
+
+</div>
+
+<div class="screenshot" id="preview">
+
+    <h2>Vista previa</h2>
+
+    <div class="preview-box">
+
+        <img src="icon128.png">
+
+        <p>
+            Interfaz rápida, ligera y diseñada para ayudarte a gestionar y restaurar sesiones completas del navegador con la máxima comodidad.
+        </p>
+
     </div>
 
 </div>
