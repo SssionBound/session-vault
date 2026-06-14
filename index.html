@@ -27,36 +27,38 @@ body{
 }
 
 .navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:25px 50px;
-    background:rgba(0,0,0,0.15);
-    backdrop-filter:blur(10px);
+    padding:20px 50px;
+    background:rgba(10,10,25,0.75);
+    backdrop-filter:blur(15px);
 }
 
 .nav-logo{
-    font-size:26px;
+    font-size:28px;
     font-weight:bold;
+    color:#9b6bff;
 }
 
 .nav-links a{
     color:white;
     text-decoration:none;
     margin-left:25px;
-    opacity:0.8;
     transition:0.3s;
 }
 
 .nav-links a:hover{
-    opacity:1;
     color:#9b6bff;
 }
 
 .container{
     max-width:1200px;
     margin:auto;
-    padding:50px 20px;
+    padding:60px 20px;
 }
 
 .logo{
@@ -72,22 +74,22 @@ body{
 }
 
 h1{
-    font-size:60px;
+    font-size:65px;
     margin-bottom:15px;
 }
 
 .subtitle{
-    font-size:22px;
+    font-size:24px;
     color:#d5d5d5;
     margin-bottom:15px;
 }
 
 .description{
     font-size:18px;
-    color:#bfbfbf;
-    max-width:700px;
+    color:#cfcfcf;
+    max-width:750px;
     margin:auto;
-    line-height:1.7;
+    line-height:1.8;
 }
 
 .button{
@@ -105,7 +107,7 @@ h1{
 
 .button:hover{
     transform:translateY(-5px);
-    box-shadow:0 0 25px rgba(124,77,255,0.5);
+    box-shadow:0 0 30px rgba(124,77,255,0.5);
 }
 
 .features{
@@ -123,13 +125,12 @@ h1{
     background:rgba(255,255,255,0.08);
     border:1px solid rgba(255,255,255,0.1);
     backdrop-filter:blur(10px);
-    box-shadow:0 8px 25px rgba(0,0,0,0.25);
     transition:0.3s;
 }
 
 .card:hover{
     transform:translateY(-10px);
-    box-shadow:0 15px 40px rgba(124,77,255,0.3);
+    box-shadow:0 15px 40px rgba(124,77,255,0.35);
 }
 
 .card h3{
@@ -143,7 +144,7 @@ h1{
 }
 
 .stats{
-    margin-top:90px;
+    margin-top:100px;
     display:flex;
     justify-content:center;
     gap:80px;
@@ -151,50 +152,81 @@ h1{
 }
 
 .stat h2{
-    font-size:42px;
+    font-size:46px;
     color:#9b6bff;
 }
 
 .stat p{
-    color:#cfcfcf;
+    color:#d7d7d7;
 }
 
-.screenshot{
+.gallery{
     margin-top:120px;
 }
 
-.screenshot h2{
-    font-size:40px;
-    margin-bottom:20px;
+.gallery h2{
+    font-size:42px;
+    margin-bottom:40px;
 }
 
-.preview-box{
-    background:rgba(255,255,255,0.08);
-    border-radius:25px;
-    padding:40px;
-    max-width:700px;
-    margin:auto;
-    border:1px solid rgba(255,255,255,0.1);
-    backdrop-filter:blur(10px);
+.gallery-grid{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:30px;
 }
 
-.preview-box img{
-    width:200px;
+.gallery-grid img{
+    width:330px;
     border-radius:20px;
-    box-shadow:0 0 35px rgba(124,77,255,0.5);
+    transition:0.4s;
+    box-shadow:0 0 25px rgba(124,77,255,0.3);
 }
 
-.preview-box p{
-    margin-top:25px;
+.gallery-grid img:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 40px rgba(124,77,255,0.7);
+}
+
+.why{
+    margin-top:120px;
+}
+
+.why h2{
+    font-size:42px;
+    margin-bottom:25px;
+}
+
+.why p{
+    max-width:850px;
+    margin:auto;
+    line-height:1.9;
     color:#d7d7d7;
-    line-height:1.7;
+    font-size:18px;
 }
 
 .footer{
     margin-top:120px;
+    padding:40px;
+    border-top:1px solid rgba(255,255,255,0.1);
     color:#999;
-    font-size:14px;
-    padding-bottom:40px;
+}
+
+@media(max-width:768px){
+
+.navbar{
+    flex-direction:column;
+    gap:15px;
+}
+
+h1{
+    font-size:45px;
+}
+
+.gallery-grid img{
+    width:95%;
+}
+
 }
 
 </style>
@@ -204,15 +236,15 @@ h1{
 
 <div class="navbar">
 
-    <div class="nav-logo">
-        SessionVault
-    </div>
+<div class="nav-logo">
+SessionVault
+</div>
 
-    <div class="nav-links">
-        <a href="#features">Características</a>
-        <a href="#preview">Vista previa</a>
-        <a href="#download">Descarga</a>
-    </div>
+<div class="nav-links">
+<a href="#features">Características</a>
+<a href="#capturas">Capturas</a>
+<a href="#porque">¿Por qué?</a>
+</div>
 
 </div>
 
@@ -230,66 +262,76 @@ Organiza, guarda y restaura tus sesiones en segundos.
 SessionVault te permite guardar grupos completos de pestañas para recuperarlos cuando quieras. Ideal para estudiantes, investigadores, desarrolladores y profesionales que trabajan con múltiples proyectos.
 </p>
 
-<a class="button" id="download" href="#">
+<a class="button" href="#">
 Disponible próximamente en Chrome Web Store
 </a>
 
 <div class="features" id="features">
 
-    <div class="card">
-        <h3>🔒 Guarda sesiones</h3>
-        <p>Almacena grupos completos de pestañas y recupéralos cuando los necesites.</p>
-    </div>
+<div class="card">
+<h3>🔒 Guarda sesiones</h3>
+<p>Almacena grupos completos de pestañas y recupéralos cuando los necesites.</p>
+</div>
 
-    <div class="card">
-        <h3>💾 Restauración rápida</h3>
-        <p>Vuelve exactamente al punto donde lo dejaste con un solo clic.</p>
-    </div>
+<div class="card">
+<h3>💾 Restauración rápida</h3>
+<p>Vuelve exactamente al punto donde lo dejaste con un solo clic.</p>
+</div>
 
-    <div class="card">
-        <h3>⚡ Más productividad</h3>
-        <p>Mantén organizados tus proyectos, estudios e investigaciones.</p>
-    </div>
+<div class="card">
+<h3>⚡ Más productividad</h3>
+<p>Mantén organizados tus proyectos, estudios e investigaciones.</p>
+</div>
 
 </div>
 
 <div class="stats">
 
-    <div class="stat">
-        <h2>1 Click</h2>
-        <p>Para restaurar una sesión</p>
-    </div>
+<div class="stat">
+<h2>1 Click</h2>
+<p>Para restaurar una sesión</p>
+</div>
 
-    <div class="stat">
-        <h2>∞</h2>
-        <p>Sesiones guardadas</p>
-    </div>
+<div class="stat">
+<h2>∞</h2>
+<p>Sesiones guardadas</p>
+</div>
 
-    <div class="stat">
-        <h2>100%</h2>
-        <p>Gratuito</p>
-    </div>
+<div class="stat">
+<h2>100%</h2>
+<p>Gratuito</p>
+</div>
 
 </div>
 
-<div class="screenshot" id="preview">
+<div class="gallery" id="capturas">
 
-    <h2>Vista previa</h2>
+<h2>Capturas reales de la extensión</h2>
 
-    <div class="preview-box">
+<div class="gallery-grid">
 
-        <img src="icon128.png">
+<img src="Captura de Extension 1.png">
 
-        <p>
-            Interfaz rápida, ligera y diseñada para ayudarte a gestionar y restaurar sesiones completas del navegador con la máxima comodidad.
-        </p>
+<img src="Captura Extension 2.png">
 
-    </div>
+<img src="Captura Extension 3.png">
+
+</div>
+
+</div>
+
+<div class="why" id="porque">
+
+<h2>¿Por qué usar SessionVault?</h2>
+
+<p>
+Muchas veces cerramos ventanas importantes por error o tenemos decenas de pestañas abiertas para un proyecto. SessionVault permite guardar sesiones completas para restaurarlas más tarde con un solo clic, manteniendo tu trabajo organizado y evitando perder tiempo buscando nuevamente todas tus páginas.
+</p>
 
 </div>
 
 <div class="footer">
-    © 2026 SessionVault. Todos los derechos reservados.
+© 2026 SessionVault · Diseñado para productividad y organización.
 </div>
 
 </div>
