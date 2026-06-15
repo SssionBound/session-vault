@@ -3,19 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SessionVault – Guarda y restaura tus sesiones</title>
+  <title>Términos de Uso – SessionVault</title>
   <link rel="icon" type="image/png" href="icon128.png">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; font-size: 16px; }
+    html { scroll-behavior: smooth; }
 
     :root {
-      --purple-deep:   #0d0820;
       --purple-dark:   #120b2f;
-      --purple-mid:    #1b1045;
       --purple-accent: #7c4dff;
       --purple-light:  #9b6bff;
-      --purple-glow:   rgba(124,77,255,0.45);
       --glass-bg:      rgba(255,255,255,0.06);
       --glass-border:  rgba(255,255,255,0.12);
       --text-main:     #f0eeff;
@@ -32,945 +29,209 @@
     }
 
     #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-    .site-wrapper { position: relative; z-index: 1; }
 
-    /* ── NAVBAR ── */
+    /* NAVBAR */
     .navbar {
       position: sticky; top: 0; z-index: 1000;
       display: flex; justify-content: space-between; align-items: center;
       padding: 16px 60px;
       background: rgba(10,8,28,0.75);
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid var(--glass-border);
-      transition: padding 0.3s;
+      backdrop-filter: blur(24px); border-bottom: 1px solid var(--glass-border);
     }
     .nav-logo {
       display: flex; align-items: center; gap: 10px;
-      font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
-      color: var(--text-main); text-decoration: none;
+      font-size: 22px; font-weight: 800; color: var(--text-main); text-decoration: none;
     }
-    .nav-logo .logo-dot {
+    .logo-dot {
       width: 8px; height: 8px; border-radius: 50%;
       background: var(--purple-accent); box-shadow: 0 0 10px var(--purple-accent);
-      animation: pulse-dot 2.5s ease-in-out infinite;
+      animation: pulse 2.5s ease-in-out infinite;
     }
-    @keyframes pulse-dot {
-      0%,100% { transform: scale(1); box-shadow: 0 0 8px var(--purple-accent); }
-      50%      { transform: scale(1.4); box-shadow: 0 0 18px var(--purple-light); }
+    @keyframes pulse {
+      0%,100% { transform:scale(1); box-shadow: 0 0 8px var(--purple-accent); }
+      50%      { transform:scale(1.4); box-shadow: 0 0 18px var(--purple-light); }
     }
-    .nav-links { display: flex; align-items: center; gap: 8px; }
-    .nav-links a {
+    .nav-back {
       color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;
-      padding: 7px 16px; border-radius: 8px; transition: color 0.25s, background 0.25s;
+      padding: 8px 18px; border-radius: 8px; border: 1px solid var(--glass-border);
+      transition: color 0.25s, background 0.25s, border-color 0.25s;
     }
-    .nav-links a:hover { color: var(--text-main); background: var(--glass-bg); }
-    .nav-cta {
-      background: linear-gradient(135deg, var(--purple-accent), var(--purple-light)) !important;
-      color: white !important; padding: 8px 20px !important; border-radius: 10px !important;
-    }
-    .nav-cta:hover { box-shadow: 0 0 20px var(--purple-glow); }
-    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
-    .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--text-main); border-radius: 2px; transition: 0.3s; }
+    .nav-back:hover { color: var(--text-main); background: var(--glass-bg); border-color: rgba(155,107,255,0.35); }
 
-    /* ── REVEAL ── */
-    .reveal {
-      opacity: 0; transform: translateY(40px);
-      transition: opacity 0.75s cubic-bezier(.22,1,.36,1), transform 0.75s cubic-bezier(.22,1,.36,1);
+    /* CONTENT */
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 800px; margin: 0 auto; padding: 80px 24px 120px;
     }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    .reveal.delay-1 { transition-delay: 0.1s; }
-    .reveal.delay-2 { transition-delay: 0.2s; }
-    .reveal.delay-3 { transition-delay: 0.3s; }
-    .reveal.delay-4 { transition-delay: 0.4s; }
 
-    /* ── HERO ── */
-    .hero {
-      max-width: 900px; margin: 0 auto; padding: 110px 24px 80px;
-      text-align: center; display: flex; flex-direction: column; align-items: center;
-    }
-    .hero-badge {
+    .page-header { text-align: center; margin-bottom: 60px; }
+
+    .page-badge {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 6px 18px; border-radius: 100px;
       background: rgba(124,77,255,0.15); border: 1px solid rgba(124,77,255,0.35);
       font-size: 13px; color: var(--purple-light); font-weight: 600;
-      letter-spacing: 0.5px; margin-bottom: 36px;
+      letter-spacing: 0.5px; margin-bottom: 28px;
     }
-    .hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--purple-light); display: inline-block; animation: pulse-dot 2s ease-in-out infinite; }
-    .logo-img {
-      width: 110px; border-radius: 28px;
-      box-shadow: 0 0 60px rgba(124,77,255,0.55), 0 0 120px rgba(124,77,255,0.2);
-      margin-bottom: 32px;
-      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), box-shadow 0.4s;
-    }
-    .logo-img:hover { transform: scale(1.08) rotate(-2deg); box-shadow: 0 0 80px rgba(155,107,255,0.7), 0 0 160px rgba(124,77,255,0.3); }
-    h1 {
-      font-size: clamp(44px,8vw,78px); font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+
+    .page-title {
+      font-size: clamp(32px,5vw,56px); font-weight: 900;
+      letter-spacing: -1.5px; line-height: 1.1;
       background: linear-gradient(135deg,#fff 30%,#c4a8ff 70%,#7c4dff);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
-    .subtitle { font-size: clamp(17px,2.5vw,22px); color: var(--text-muted); margin-bottom: 16px; font-weight: 400; line-height: 1.6; }
-    .description { font-size: 17px; color: var(--text-dim); max-width: 680px; margin: 0 auto 40px; line-height: 1.85; }
 
-    /* ── CTA ── */
-    .btn-primary {
-      position: relative; display: inline-flex; align-items: center; gap: 10px;
-      padding: 18px 44px; border-radius: 14px;
-      background: linear-gradient(135deg, var(--purple-accent), var(--purple-light));
-      color: white; font-size: 17px; font-weight: 700; text-decoration: none; overflow: hidden;
-      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s;
-    }
-    .btn-primary::before {
-      content: ''; position: absolute; top: -50%; left: -75%; width: 50%; height: 200%;
-      background: rgba(255,255,255,0.25); transform: skewX(-20deg);
-      animation: btn-shine 3s ease-in-out infinite;
-    }
-    @keyframes btn-shine { 0% { left:-75%; } 40% { left:125%; } 100% { left:125%; } }
-    .btn-primary:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 50px rgba(124,77,255,0.55), 0 0 0 1px rgba(155,107,255,0.4); }
+    .page-date { color: var(--text-dim); font-size: 14px; }
 
-    /* ── LAYOUT ── */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .section-label { font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--purple-light); margin-bottom: 14px; }
-    .section-title { font-size: clamp(28px,4vw,44px); font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.15; }
-    .section-subtitle { color: var(--text-muted); font-size: 17px; max-width: 600px; margin: 0 auto 56px; line-height: 1.7; }
-
-    /* ── FEATURES ── */
-    .features-section { padding: 80px 0 60px; text-align: center; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 24px; }
-    .card {
-      padding: 36px 32px; border-radius: 22px; background: var(--glass-bg);
-      border: 1px solid var(--glass-border); backdrop-filter: blur(14px);
-      text-align: left; position: relative; overflow: hidden;
-      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s, border-color 0.35s;
-    }
-    .card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top left,rgba(124,77,255,0.12),transparent 65%); opacity: 0; transition: opacity 0.35s; }
-    .card:hover::before { opacity: 1; }
-    .card:hover { transform: translateY(-10px); box-shadow: 0 24px 60px rgba(124,77,255,0.28), 0 0 0 1px rgba(155,107,255,0.25); border-color: rgba(155,107,255,0.35); }
-    .card-icon { font-size: 36px; margin-bottom: 18px; display: inline-block; }
-    .card h3 { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
-    .card p { color: var(--text-muted); line-height: 1.75; font-size: 15px; }
-
-    /* ── ANIMATED STATS ── */
-    .stats-section { padding: 60px 0 80px; }
-    .stats-inner {
-      display: flex; justify-content: center; flex-wrap: wrap;
+    /* CARD */
+    .doc-card {
       background: var(--glass-bg); border: 1px solid var(--glass-border);
-      border-radius: 24px; backdrop-filter: blur(14px); overflow: hidden;
+      border-radius: 24px; backdrop-filter: blur(16px);
+      padding: 52px 56px; display: flex; flex-direction: column; gap: 48px;
     }
-    .stat-item { flex: 1; min-width: 180px; padding: 44px 24px; text-align: center; border-right: 1px solid var(--glass-border); transition: background 0.3s; }
-    .stat-item:last-child { border-right: none; }
-    .stat-item:hover { background: rgba(124,77,255,0.08); }
-    .stat-item h2 {
-      font-size: 50px; font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 8px;
-      background: linear-gradient(135deg,var(--purple-light),#c4a8ff);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+
+    .doc-section { display: flex; flex-direction: column; gap: 14px; }
+
+    .doc-section-header {
+      display: flex; align-items: center; gap: 14px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--glass-border);
     }
-    .stat-item p { color: var(--text-muted); font-size: 14px; font-weight: 500; }
 
-    /* ── GALLERY ── */
-    .gallery-section { padding: 60px 0 80px; text-align: center; }
-    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 24px; }
-    .gallery-item {
-      position: relative; border-radius: 20px; overflow: hidden;
-      background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer;
-      transition: transform 0.4s cubic-bezier(.34,1.56,.64,1), box-shadow 0.4s, border-color 0.4s;
+    .doc-icon {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      background: rgba(124,77,255,0.18); border: 1px solid rgba(124,77,255,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
     }
-    .gallery-item:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 30px 80px rgba(124,77,255,0.4); border-color: rgba(155,107,255,0.5); }
-    .gallery-overlay { position: absolute; inset: 0; background: rgba(13,8,32,0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
-    .gallery-item:hover .gallery-overlay { opacity: 1; }
-    .gallery-overlay span { font-size: 14px; font-weight: 600; color: white; background: rgba(124,77,255,0.85); padding: 10px 22px; border-radius: 30px; border: 1px solid rgba(155,107,255,0.5); pointer-events: none; }
-    .gallery-item img { width: 100%; height: auto; display: block; }
 
-    /* ── LIGHTBOX ── */
-    .lightbox { display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(8,5,20,0.93); backdrop-filter: blur(14px); align-items: center; justify-content: center; padding: 20px; }
-    .lightbox.active { display: flex; }
-    .lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
-    .lightbox-inner img { max-width: 100%; max-height: 85vh; border-radius: 16px; box-shadow: 0 0 80px rgba(124,77,255,0.5); display: block; }
-    .lightbox-close { position: absolute; top: -18px; right: -18px; width: 38px; height: 38px; border-radius: 50%; background: var(--purple-accent); border: none; color: white; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(124,77,255,0.6); transition: transform 0.2s, background 0.2s; }
-    .lightbox-close:hover { transform: scale(1.15); background: var(--purple-light); }
-
-    /* ── ADVANTAGES ── */
-    .advantages-section { padding: 60px 0 80px; text-align: center; }
-    .advantages-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 20px; }
-    .adv-card {
-      padding: 40px 28px 36px; border-radius: 20px; background: var(--glass-bg);
-      border: 1px solid var(--glass-border); backdrop-filter: blur(14px);
-      text-align: center; position: relative; overflow: hidden;
-      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s, border-color 0.35s;
+    .doc-section h2 {
+      font-size: 19px; font-weight: 700; color: var(--text-main);
     }
-    .adv-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg,var(--purple-accent),var(--purple-light)); transform: scaleX(0); transition: transform 0.35s; }
-    .adv-card:hover::after { transform: scaleX(1); }
-    .adv-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(124,77,255,0.3); border-color: rgba(155,107,255,0.3); }
-    .adv-icon { font-size: 44px; margin-bottom: 20px; display: block; }
-    .adv-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
-    .adv-card p { color: var(--text-muted); font-size: 14px; line-height: 1.7; }
 
-    /* ── WHY ── */
-    .why-section { padding: 60px 0 80px; text-align: center; }
-    .why-box { max-width: 800px; margin: 0 auto; padding: 52px 56px; border-radius: 28px; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(16px); position: relative; overflow: hidden; }
-    .why-box::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle,rgba(124,77,255,0.25),transparent 70%); pointer-events: none; }
-    .why-box p { color: var(--text-muted); font-size: 17px; line-height: 1.9; position: relative; }
-
-    /* ── REVIEWS ── */
-    .reviews-section { padding: 60px 0 80px; text-align: center; }
-
-    .rating-summary {
-      display: inline-flex; flex-direction: column; align-items: center; gap: 6px;
-      margin-bottom: 60px; padding: 32px 56px; border-radius: 24px;
-      background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(14px);
+    .doc-section p {
+      color: var(--text-muted); font-size: 15px; line-height: 1.85;
     }
-    .rating-stars-big { font-size: 36px; letter-spacing: 4px; color: #f5c842; line-height: 1; }
-    .rating-score { font-size: 52px; font-weight: 900; letter-spacing: -2px; background: linear-gradient(135deg,#fff,#c4a8ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .rating-count { color: var(--text-dim); font-size: 14px; }
 
-    .reviews-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 22px; margin-bottom: 60px; }
-
-    .review-card {
-      padding: 28px 26px; border-radius: 20px; background: var(--glass-bg);
-      border: 1px solid var(--glass-border); backdrop-filter: blur(14px);
-      text-align: left; position: relative; overflow: hidden;
-      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s, border-color 0.35s;
-      animation: fadeInUp 0.6s ease both;
+    .doc-highlight {
+      background: rgba(124,77,255,0.10); border: 1px solid rgba(124,77,255,0.22);
+      border-radius: 12px; padding: 18px 22px;
+      color: var(--purple-light); font-size: 14px; font-weight: 500; line-height: 1.7;
     }
-    @keyframes fadeInUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-    .review-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(124,77,255,0.28); border-color: rgba(155,107,255,0.35); }
-    .review-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top left,rgba(124,77,255,0.10),transparent 60%); opacity: 0; transition: opacity 0.35s; }
-    .review-card:hover::before { opacity: 1; }
 
-    .review-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-    .review-avatar {
-      width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px; font-weight: 800; color: white;
-      background: linear-gradient(135deg,var(--purple-accent),var(--purple-light));
-      box-shadow: 0 0 16px rgba(124,77,255,0.5);
+    /* FOOTER */
+    .page-footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(10,8,28,0.5); backdrop-filter: blur(12px);
+      padding: 24px; text-align: center;
+      color: var(--text-dim); font-size: 13px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
     }
-    .review-meta { display: flex; flex-direction: column; gap: 3px; }
-    .review-name { font-weight: 700; font-size: 15px; color: var(--text-main); }
-    .review-stars { color: #f5c842; font-size: 13px; letter-spacing: 1px; }
-    .review-text { color: var(--text-muted); font-size: 14px; line-height: 1.75; font-style: italic; }
-    .review-text::before { content: '"'; }
-    .review-text::after { content: '"'; }
+    .page-footer a { color: var(--text-dim); text-decoration: none; transition: color 0.25s; }
+    .page-footer a:hover { color: var(--purple-light); }
+    .footer-sep { color: var(--glass-border); }
 
-    /* ── REVIEW FORM ── */
-    .review-form-wrap {
-      max-width: 640px; margin: 0 auto; padding: 44px 48px; border-radius: 24px;
-      background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(16px);
-      text-align: left;
-    }
-    .review-form-wrap h3 { font-size: 24px; font-weight: 800; margin-bottom: 6px; text-align: center; }
-    .review-form-wrap .form-sub { color: var(--text-dim); font-size: 14px; text-align: center; margin-bottom: 32px; }
-
-    .form-group { margin-bottom: 22px; }
-    .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 14px 18px; border-radius: 12px;
-      background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-      color: var(--text-main); font-size: 15px; font-family: inherit;
-      outline: none; transition: border-color 0.25s, box-shadow 0.25s;
-      resize: vertical;
-    }
-    .form-group input:focus, .form-group textarea:focus { border-color: rgba(155,107,255,0.6); box-shadow: 0 0 0 3px rgba(124,77,255,0.12); }
-    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-dim); }
-
-    .star-selector { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 6px; margin-top: 4px; }
-    .star-selector input { display: none; }
-    .star-selector label { font-size: 30px; cursor: pointer; color: rgba(255,255,255,0.2); transition: color 0.15s, transform 0.15s; }
-    .star-selector label:hover,
-    .star-selector label:hover ~ label,
-    .star-selector input:checked ~ label { color: #f5c842; }
-    .star-selector label:hover { transform: scale(1.2); }
-
-    .form-error { color: #ff6b9d; font-size: 13px; margin-top: 6px; display: none; }
-    .form-error.show { display: block; }
-
-    .btn-submit {
-      width: 100%; padding: 16px; border-radius: 12px; border: none; cursor: pointer;
-      background: linear-gradient(135deg,var(--purple-accent),var(--purple-light));
-      color: white; font-size: 16px; font-weight: 700; font-family: inherit;
-      position: relative; overflow: hidden;
-      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s;
-    }
-    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(124,77,255,0.5); }
-    .btn-submit:active { transform: translateY(0); }
-
-    .form-success {
-      display: none; text-align: center; padding: 20px;
-      color: #7cffc4; font-size: 15px; font-weight: 600;
-      background: rgba(124,255,196,0.07); border: 1px solid rgba(124,255,196,0.2);
-      border-radius: 12px; margin-top: 20px;
-    }
-    .form-success.show { display: block; animation: fadeInUp 0.4s ease; }
-
-    /* ── FAQ ── */
-    .faq-section { padding: 60px 0 80px; text-align: center; }
-    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
-    .faq-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden; transition: border-color 0.3s; }
-    .faq-item.open { border-color: rgba(155,107,255,0.4); }
-    .faq-question { width: 100%; background: none; border: none; color: var(--text-main); font-size: 16px; font-weight: 600; padding: 22px 28px; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: color 0.25s; }
-    .faq-question:hover { color: var(--purple-light); }
-    .faq-icon { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; background: rgba(124,77,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--purple-light); transition: transform 0.35s, background 0.25s; }
-    .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(124,77,255,0.3); }
-    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(.4,0,.2,1); }
-    .faq-answer-inner { padding: 0 28px 24px; color: var(--text-muted); font-size: 15px; line-height: 1.8; text-align: left; }
-
-    /* ── FOOTER ── */
-    .footer { margin-top: 40px; border-top: 1px solid var(--glass-border); background: rgba(10,8,28,0.5); backdrop-filter: blur(12px); }
-    .footer-inner { max-width: 1200px; margin: 0 auto; padding: 60px 24px 40px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; text-align: left; }
-    .footer-brand .brand-name { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; }
-    .footer-brand p { color: var(--text-dim); font-size: 14px; line-height: 1.7; }
-    .footer-col h4 { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; }
-    .footer-col a { display: block; color: var(--text-muted); text-decoration: none; font-size: 14px; margin-bottom: 10px; transition: color 0.25s, padding-left 0.25s; }
-    .footer-col a:hover { color: var(--purple-light); padding-left: 6px; }
-    .footer-bottom { border-top: 1px solid var(--glass-border); padding: 20px 24px; text-align: center; color: var(--text-dim); font-size: 13px; }
-
-    /* ── SCROLL-TO-TOP ── */
-    .scroll-top {
-      position: fixed; bottom: 30px; right: 30px; z-index: 999;
-      width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
-      background: linear-gradient(135deg,var(--purple-accent),var(--purple-light));
-      color: white; font-size: 20px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 24px rgba(124,77,255,0.5);
-      opacity: 0; transform: translateY(20px); pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .scroll-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .scroll-top:hover { transform: translateY(-4px) scale(1.1); box-shadow: 0 8px 32px rgba(124,77,255,0.7); }
-
-    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .navbar { padding: 14px 20px; }
-      .nav-toggle { display: flex; }
-      .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: rgba(10,8,28,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); padding: 16px; gap: 4px; }
-      .nav-links.open { display: flex; }
-      .nav-links a { width: 100%; }
-      .hero { padding: 80px 20px 60px; }
-      .stats-inner { flex-direction: column; }
-      .stat-item { border-right: none; border-bottom: 1px solid var(--glass-border); }
-      .stat-item:last-child { border-bottom: none; }
-      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
-      .why-box { padding: 36px 28px; }
-      .review-form-wrap { padding: 32px 22px; }
-      .rating-summary { padding: 24px 32px; }
-    }
-    @media (max-width: 480px) {
-      .features-grid, .advantages-grid, .gallery-grid, .reviews-grid { grid-template-columns: 1fr; }
-      .btn-primary { width: 100%; justify-content: center; }
+      .doc-card { padding: 32px 22px; gap: 36px; }
     }
   </style>
 </head>
 <body>
-
 <canvas id="bg-canvas"></canvas>
 
-<div class="site-wrapper">
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <span class="logo-dot"></span>SessionVault
+  </a>
+  <a href="index.html" class="nav-back">← Volver al inicio</a>
+</nav>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <a href="#" class="nav-logo">
-      <span class="logo-dot"></span>
-      SessionVault
-    </a>
-    <div class="nav-toggle" id="nav-toggle">
-      <span></span><span></span><span></span>
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="page-badge">📄 Legal</div>
+    <h1 class="page-title">Términos de Uso</h1>
+    <p class="page-date">Última actualización: 2026</p>
+  </div>
+
+  <div class="doc-card">
+
+    <div class="doc-highlight">
+      💜 Al instalar y usar SessionVault, aceptas los presentes términos de uso. Por favor, léelos antes de utilizar la extensión.
     </div>
-    <div class="nav-links" id="nav-links">
-      <a href="#features">Características</a>
-      <a href="#ventajas">Ventajas</a>
-      <a href="#capturas">Capturas</a>
-      <a href="#opiniones">Opiniones</a>
-      <a href="#faq">FAQ</a>
-      <a href="#" class="nav-cta">Próximamente</a>
+
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">🧩</div>
+        <h2>Uso de la extensión</h2>
+      </div>
+      <p>SessionVault está diseñada para ayudar a los usuarios a guardar y restaurar sesiones del navegador de forma rápida y privada. El uso de la extensión está permitido para fines personales y profesionales. No está permitido usar la extensión para actividades ilegales, fraudulentas o que perjudiquen a terceros.</p>
     </div>
-  </nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <img src="icon128.png" class="logo-img reveal" alt="SessionVault logo">
-    <div class="hero-badge reveal delay-1">
-      <span></span> Extensión para Chrome &amp; Edge
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">⚠️</div>
+        <h2>Limitación de responsabilidad</h2>
+      </div>
+      <p>La extensión se proporciona "tal cual", sin garantías de ningún tipo, expresas o implícitas. SessionVault no se hace responsable de la pérdida de datos, interrupciones del servicio ni de daños derivados del uso de la extensión. Se recomienda realizar copias de seguridad de la información importante de forma independiente.</p>
     </div>
-    <h1 class="reveal delay-2">SessionVault</h1>
-    <p class="subtitle reveal delay-3">Guarda y restaura tus sesiones en segundos.</p>
-    <p class="description reveal delay-3">
-      SessionVault te permite guardar grupos completos de pestañas para recuperarlos cuando quieras.
-      Ideal para estudiantes, investigadores, desarrolladores y profesionales que trabajan con múltiples proyectos.
-    </p>
-    <a class="btn-primary reveal delay-4" href="#">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v14m0 0l-4-4m4 4l4-4M2 17v3a2 2 0 002 2h16a2 2 0 002-2v-3"/></svg>
-      Disponible próximamente en Chrome Web Store
-    </a>
-  </section>
 
-  <!-- FEATURES -->
-  <section class="features-section" id="features">
-    <div class="container">
-      <p class="section-label reveal">Funcionalidades</p>
-      <h2 class="section-title reveal">Todo lo que necesitas</h2>
-      <p class="section-subtitle reveal">Sin complicaciones. Sin registro. Solo guarda, restaura y trabaja.</p>
-      <div class="features-grid">
-        <div class="card reveal delay-1">
-          <span class="card-icon">🔒</span>
-          <h3>Guarda sesiones</h3>
-          <p>Almacena grupos completos de pestañas y recupéralos exactamente cuando los necesites, sin perder ninguna.</p>
-        </div>
-        <div class="card reveal delay-2">
-          <span class="card-icon">💾</span>
-          <h3>Restauración rápida</h3>
-          <p>Vuelve al punto exacto donde lo dejaste con un solo clic. Tu flujo de trabajo, intacto.</p>
-        </div>
-        <div class="card reveal delay-3">
-          <span class="card-icon">⚡</span>
-          <h3>Más productividad</h3>
-          <p>Mantén organizados tus proyectos, estudios e investigaciones sin perder tiempo buscando pestañas perdidas.</p>
-        </div>
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">🔒</div>
+        <h2>Propiedad intelectual</h2>
       </div>
+      <p>SessionVault, su nombre, logotipo y todo el contenido asociado son propiedad de sus creadores. Queda prohibida la reproducción, distribución o modificación de la extensión sin autorización expresa. El uso de la extensión no otorga ningún derecho sobre la propiedad intelectual del proyecto.</p>
     </div>
-  </section>
 
-  <!-- STATS ANIMADOS -->
-  <section class="stats-section">
-    <div class="container">
-      <div class="stats-inner reveal">
-        <div class="stat-item">
-          <h2><span class="counter" data-target="500" data-suffix="+">0</span></h2>
-          <p>Sesiones restauradas</p>
-        </div>
-        <div class="stat-item">
-          <h2><span class="counter" data-target="100" data-suffix="+">0</span></h2>
-          <p>Usuarios activos</p>
-        </div>
-        <div class="stat-item">
-          <h2><span class="counter" data-target="5" data-suffix=".0★" data-float="true">0</span></h2>
-          <p>Valoración media</p>
-        </div>
-        <div class="stat-item">
-          <h2><span class="counter" data-target="100" data-suffix="%">0</span></h2>
-          <p>Gratuito</p>
-        </div>
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">🔄</div>
+        <h2>Modificaciones</h2>
       </div>
+      <p>Los presentes términos pueden actualizarse en futuras versiones de SessionVault. Cualquier modificación relevante se comunicará a través de la página oficial del proyecto en la Chrome Web Store. El uso continuado de la extensión tras la publicación de cambios implica la aceptación de los nuevos términos.</p>
     </div>
-  </section>
 
-  <!-- GALLERY -->
-  <section class="gallery-section" id="capturas">
-    <div class="container">
-      <p class="section-label reveal">Capturas reales</p>
-      <h2 class="section-title reveal">Ve SessionVault en acción</h2>
-      <p class="section-subtitle reveal">Así luce la extensión directamente en tu navegador.</p>
-      <div class="gallery-grid">
-        <div class="gallery-item reveal delay-1" onclick="openLightbox('Captura de Extension 1.png')">
-          <img src="Captura de Extension 1.png" alt="SessionVault - vista principal">
-          <div class="gallery-overlay"><span>Ver imagen</span></div>
-        </div>
-        <div class="gallery-item reveal delay-2" onclick="openLightbox('Captura Extension 2.png')">
-          <img src="Captura Extension 2.png" alt="SessionVault - guardar sesion">
-          <div class="gallery-overlay"><span>Ver imagen</span></div>
-        </div>
-        <div class="gallery-item reveal delay-3" onclick="openLightbox('Captura Extension 3.png')">
-          <img src="Captura Extension 3.png" alt="SessionVault - restaurar sesion">
-          <div class="gallery-overlay"><span>Ver imagen</span></div>
-        </div>
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">💬</div>
+        <h2>Consultas</h2>
       </div>
+      <p>Para cualquier consulta relacionada con SessionVault, sus términos de uso o política de privacidad, utiliza la página oficial del proyecto en la Chrome Web Store o los canales de soporte habilitados en cada momento.</p>
     </div>
-  </section>
 
-  <!-- ADVANTAGES -->
-  <section class="advantages-section" id="ventajas">
-    <div class="container">
-      <p class="section-label reveal">Por qué elegirlo</p>
-      <h2 class="section-title reveal">Diseñado para ti</h2>
-      <p class="section-subtitle reveal">Cuatro pilares que hacen de SessionVault una herramienta diferente.</p>
-      <div class="advantages-grid">
-        <div class="adv-card reveal delay-1">
-          <span class="adv-icon">🛡️</span>
-          <h3>Privacidad total</h3>
-          <p>Tus sesiones se guardan localmente en tu navegador. Ningún dato sale de tu dispositivo.</p>
-        </div>
-        <div class="adv-card reveal delay-2">
-          <span class="adv-icon">🚀</span>
-          <h3>Rapidez extrema</h3>
-          <p>Guarda o restaura decenas de pestañas en menos de un segundo. Sin esperas, sin carga.</p>
-        </div>
-        <div class="adv-card reveal delay-3">
-          <span class="adv-icon">🗂️</span>
-          <h3>Organización clara</h3>
-          <p>Nombra y organiza tus sesiones por proyecto, tema o momento. Todo siempre a mano.</p>
-        </div>
-        <div class="adv-card reveal delay-4">
-          <span class="adv-icon">✨</span>
-          <h3>Simplicidad real</h3>
-          <p>Sin registros, sin cuentas, sin configuración. Instala y empieza a usarlo en segundos.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHY -->
-  <section class="why-section" id="porque">
-    <div class="container">
-      <p class="section-label reveal">Por que SessionVault</p>
-      <h2 class="section-title reveal">Tu flujo de trabajo, protegido</h2>
-      <div class="why-box reveal">
-        <p>
-          Muchas veces cerramos ventanas importantes por error o acumulamos decenas de pestañas para un proyecto sin saber cómo organizarlas.
-          SessionVault resuelve este problema de raíz: guarda sesiones completas para restaurarlas más tarde con un solo clic,
-          manteniendo tu trabajo organizado y evitando perder tiempo buscando nuevamente todas tus páginas.
-          Sin servidores externos, sin registro obligatorio, solo una herramienta rápida y privada que hace exactamente lo que promete.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- REVIEWS -->
-  <section class="reviews-section" id="opiniones">
-    <div class="container">
-      <p class="section-label reveal">Opiniones de usuarios</p>
-      <h2 class="section-title reveal">Lo que dicen quienes la usan</h2>
-      <p class="section-subtitle reveal">Reseñas reales de personas que ya organizan su trabajo con SessionVault.</p>
-
-      <div class="reveal">
-        <div class="rating-summary">
-          <div class="rating-stars-big">★★★★★</div>
-          <div class="rating-score">5.0 / 5</div>
-          <div class="rating-count">Basado en 100+ valoraciones</div>
-        </div>
-      </div>
-
-      <div class="reviews-grid" id="reviews-grid">
-        <!-- Reseñas de ejemplo -->
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#7c4dff,#c4a8ff)">CM</div>
-            <div class="review-meta">
-              <span class="review-name">Carlos M.</span>
-              <span class="review-stars">★★★★★</span>
-            </div>
-          </div>
-          <p class="review-text">Perfecta para guardar mis pestañas de trabajo. Antes perdía horas buscando las mismas páginas cada día.</p>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#a855f7,#7c4dff)">LG</div>
-            <div class="review-meta">
-              <span class="review-name">Laura G.</span>
-              <span class="review-stars">★★★★★</span>
-            </div>
-          </div>
-          <p class="review-text">Mucho más cómoda que usar marcadores. La restauración en un clic es un cambio total en mi forma de trabajar.</p>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#6d28d9,#9b6bff)">DR</div>
-            <div class="review-meta">
-              <span class="review-name">Daniel R.</span>
-              <span class="review-stars">★★★★★</span>
-            </div>
-          </div>
-          <p class="review-text">Recupero sesiones completas con un clic. Ideal para investigación: guardo todo por temas y lo recupero al instante.</p>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#8b5cf6,#c4a8ff)">AS</div>
-            <div class="review-meta">
-              <span class="review-name">Andrea S.</span>
-              <span class="review-stars">★★★★★</span>
-            </div>
-          </div>
-          <p class="review-text">Interfaz increíblemente limpia. Se nota que está hecha con cuidado. La recomiendo a todos mis compañeros de trabajo.</p>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">JT</div>
-            <div class="review-meta">
-              <span class="review-name">Javier T.</span>
-              <span class="review-stars">★★★★★</span>
-            </div>
-          </div>
-          <p class="review-text">Me ahorra muchísimo tiempo. Tengo sesiones guardadas para cada proyecto y las cambio en segundos sin perder nada.</p>
-        </div>
-        <div class="review-card">
-          <div class="review-header">
-            <div class="review-avatar" style="background:linear-gradient(135deg,#5b21b6,#9b6bff)">MP</div>
-            <div class="review-meta">
-              <span class="review-name">Marta P.</span>
-              <span class="review-stars">★★★★★</span>
-            </div>
-          </div>
-          <p class="review-text">Justo lo que necesitaba para organizar mi trabajo. Sencilla, rápida y sin necesidad de ninguna cuenta. Perfecta.</p>
-        </div>
-      </div>
-
-      <!-- FORM -->
-      <div class="review-form-wrap reveal">
-        <h3>Deja tu opinión</h3>
-        <p class="form-sub">Tu experiencia ayuda a otros usuarios a conocer SessionVault</p>
-
-        <div class="form-group">
-          <label>Tu nombre</label>
-          <input type="text" id="review-name" placeholder="Ej: Ana García" maxlength="50">
-          <div class="form-error" id="err-name">Por favor, introduce tu nombre.</div>
-        </div>
-
-        <div class="form-group">
-          <label>Valoración</label>
-          <div class="star-selector">
-            <input type="radio" id="s5" name="stars" value="5"><label for="s5">★</label>
-            <input type="radio" id="s4" name="stars" value="4"><label for="s4">★</label>
-            <input type="radio" id="s3" name="stars" value="3"><label for="s3">★</label>
-            <input type="radio" id="s2" name="stars" value="2"><label for="s2">★</label>
-            <input type="radio" id="s1" name="stars" value="1"><label for="s1">★</label>
-          </div>
-          <div class="form-error" id="err-stars">Por favor, elige una valoración.</div>
-        </div>
-
-        <div class="form-group">
-          <label>Tu comentario</label>
-          <textarea id="review-comment" rows="4" placeholder="Cuéntanos tu experiencia (mínimo 10 caracteres)..." maxlength="400"></textarea>
-          <div class="form-error" id="err-comment">El comentario debe tener al menos 10 caracteres.</div>
-        </div>
-
-        <button class="btn-submit" onclick="submitReview()">Enviar reseña</button>
-        <div class="form-success" id="form-success">¡Gracias! Tu reseña ha sido publicada correctamente.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="faq-section" id="faq">
-    <div class="container">
-      <p class="section-label reveal">FAQ</p>
-      <h2 class="section-title reveal">Preguntas frecuentes</h2>
-      <p class="section-subtitle reveal">Resolvemos las dudas más habituales.</p>
-      <div class="faq-list">
-
-        <div class="faq-item reveal delay-1">
-          <button class="faq-question" aria-expanded="false">
-            ¿Cómo funciona SessionVault?
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-answer"><div class="faq-answer-inner">
-            SessionVault detecta las pestañas abiertas en tu navegador y te permite guardarlas como un grupo con nombre personalizado. Cuando quieras recuperarlas, selecciona la sesión y la extensión las abre todas automáticamente.
-          </div></div>
-        </div>
-
-        <div class="faq-item reveal delay-2">
-          <button class="faq-question" aria-expanded="false">
-            ¿Qué ocurre si cierro Chrome?
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-answer"><div class="faq-answer-inner">
-            Tus sesiones guardadas permanecen almacenadas de forma segura. La extensión usa el almacenamiento local de Chrome, por lo que tus datos persisten entre reinicios del navegador.
-          </div></div>
-        </div>
-
-        <div class="faq-item reveal delay-3">
-          <button class="faq-question" aria-expanded="false">
-            ¿Es gratuita?
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-answer"><div class="faq-answer-inner">
-            Sí, SessionVault es completamente gratuita. Puedes guardar sesiones ilimitadas sin ningún coste. En el futuro podrían añadirse funciones Premium opcionales, pero el núcleo siempre será gratis.
-          </div></div>
-        </div>
-
-        <div class="faq-item reveal delay-4">
-          <button class="faq-question" aria-expanded="false">
-            ¿Necesito crear una cuenta?
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-answer"><div class="faq-answer-inner">
-            No. No es necesario registrarse ni crear ninguna cuenta. Instala la extensión y úsala de inmediato. Ningún dato tuyo se envía a ningún servidor.
-          </div></div>
-        </div>
-
-        <div class="faq-item reveal delay-4">
-          <button class="faq-question" aria-expanded="false">
-            ¿Dónde se guardan las sesiones?
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-answer"><div class="faq-answer-inner">
-            Todas las sesiones se almacenan localmente usando <code>chrome.storage.local</code>. Ningún dato sale de tu dispositivo. Tu privacidad está completamente garantizada.
-          </div></div>
-        </div>
-
-        <div class="faq-item reveal delay-4">
-          <button class="faq-question" aria-expanded="false">
-            ¿Puedo guardar sesiones ilimitadas?
-            <span class="faq-icon">+</span>
-          </button>
-          <div class="faq-answer"><div class="faq-answer-inner">
-            Sí, puedes guardar todas las sesiones que necesites. El único límite es el espacio de almacenamiento local de tu navegador, que en la práctica es más que suficiente para cualquier uso normal.
-          </div></div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="brand-name">SessionVault</div>
-        <p>Extensión para Chrome y Edge que te permite guardar y restaurar grupos de pestañas con un solo clic. Sin registro. Sin servidores. 100% privada.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Producto</h4>
-        <a href="#features">Características</a>
-        <a href="#ventajas">Ventajas</a>
-        <a href="#capturas">Capturas</a>
-        <a href="#opiniones">Opiniones</a>
-        <a href="#faq">FAQ</a>
-      </div>
-      <div class="footer-col">
-        <h4>Legal &amp; Soporte</h4>
-        <a href="mailto:info@sessionvault.app">Contacto</a>
-        <a href="#">Política de privacidad</a>
-        <a href="#">Términos de uso</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      © 2026 SessionVault · Hecho con 💜 para la productividad real.
-    </div>
-  </footer>
-
-</div>
-
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <div class="lightbox-inner">
-    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-    <img id="lightbox-img" src="" alt="Captura ampliada">
   </div>
 </div>
 
-<!-- SCROLL TO TOP -->
-<button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<footer class="page-footer">
+  <span>© 2026 SessionVault</span>
+  <span class="footer-sep">·</span>
+  <a href="privacy.html">Política de privacidad</a>
+  <span class="footer-sep">·</span>
+  <a href="terms.html">Términos de uso</a>
+  <span class="footer-sep">·</span>
+  <a href="index.html">Volver al inicio</a>
+</footer>
 
 <script>
-/* ── CANVAS BACKGROUND ── */
 (function(){
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, particles = [];
   const COLORS = ['rgba(124,77,255,','rgba(155,107,255,','rgba(200,170,255,'];
-
-  function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-
-  function Particle(){ this.reset(); }
-  Particle.prototype.reset = function(){
-    this.x = Math.random()*W; this.y = Math.random()*H;
-    this.r = Math.random()*2.5+0.5;
-    this.vx = (Math.random()-0.5)*0.35; this.vy = (Math.random()-0.5)*0.35;
-    this.alpha = Math.random()*0.55+0.1;
-    this.color = COLORS[Math.floor(Math.random()*COLORS.length)];
-  };
-  Particle.prototype.update = function(){
-    this.x += this.vx; this.y += this.vy;
-    if(this.x<-10||this.x>W+10||this.y<-10||this.y>H+10) this.reset();
-  };
-  Particle.prototype.draw = function(){
-    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-    ctx.fillStyle = this.color+this.alpha+')'; ctx.fill();
-  };
-
-  const orbs = [
-    {x:0.15,y:0.2,r:280,color:'rgba(124,77,255,'},
-    {x:0.85,y:0.7,r:240,color:'rgba(155,107,255,'},
-    {x:0.5,y:1.05,r:200,color:'rgba(100,60,220,'}
-  ];
-  function drawOrbs(){
-    orbs.forEach(o=>{
-      const g = ctx.createRadialGradient(o.x*W,o.y*H,0,o.x*W,o.y*H,o.r);
-      g.addColorStop(0,o.color+'0.10)'); g.addColorStop(1,o.color+'0)');
-      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    });
-  }
-
-  let raf;
-  function loop(){
-    ctx.clearRect(0,0,W,H); drawOrbs();
-    particles.forEach(p=>{ p.update(); p.draw(); });
-    for(let i=0;i<particles.length;i++){
-      for(let j=i+1;j<particles.length;j++){
-        const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
-        const d=Math.sqrt(dx*dx+dy*dy);
-        if(d<120){ ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.strokeStyle='rgba(124,77,255,'+(0.12*(1-d/120))+')'; ctx.lineWidth=0.7; ctx.stroke(); }
-      }
-    }
-    raf = requestAnimationFrame(loop);
-  }
-
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  function P(){ this.reset(); }
+  P.prototype.reset=function(){ this.x=Math.random()*W; this.y=Math.random()*H; this.r=Math.random()*2+0.5; this.vx=(Math.random()-0.5)*0.3; this.vy=(Math.random()-0.5)*0.3; this.alpha=Math.random()*0.4+0.1; this.color=COLORS[Math.floor(Math.random()*COLORS.length)]; };
+  P.prototype.update=function(){ this.x+=this.vx; this.y+=this.vy; if(this.x<-10||this.x>W+10||this.y<-10||this.y>H+10)this.reset(); };
+  P.prototype.draw=function(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=this.color+this.alpha+')'; ctx.fill(); };
+  const orbs=[{x:0.1,y:0.2,r:250,c:'rgba(124,77,255,'},{x:0.9,y:0.8,r:200,c:'rgba(155,107,255,'}];
+  function drawOrbs(){ orbs.forEach(o=>{ const g=ctx.createRadialGradient(o.x*W,o.y*H,0,o.x*W,o.y*H,o.r); g.addColorStop(0,o.c+'0.09)'); g.addColorStop(1,o.c+'0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }); }
   resize();
-  for(let i=0;i<90;i++) particles.push(new Particle());
+  for(let i=0;i<60;i++) particles.push(new P());
+  function loop(){ ctx.clearRect(0,0,W,H); drawOrbs(); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(loop); }
   loop();
-  window.addEventListener('resize',()=>{ resize(); particles=[]; for(let i=0;i<90;i++) particles.push(new Particle()); });
-  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches){ cancelAnimationFrame(raf); ctx.clearRect(0,0,W,H); drawOrbs(); }
+  window.addEventListener('resize',resize);
 })();
-
-/* ── SCROLL REVEAL ── */
-(function(){
-  const io = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
-  },{threshold:0.12});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-})();
-
-/* ── MOBILE NAV ── */
-(function(){
-  const toggle = document.getElementById('nav-toggle');
-  const links  = document.getElementById('nav-links');
-  toggle.addEventListener('click',()=>links.classList.toggle('open'));
-  links.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
-})();
-
-/* ── SCROLL TO TOP ── */
-(function(){
-  const btn = document.getElementById('scroll-top');
-  window.addEventListener('scroll',()=>{ btn.classList.toggle('visible', window.scrollY > 400); });
-})();
-
-/* ── ANIMATED COUNTERS ── */
-(function(){
-  const counters = document.querySelectorAll('.counter');
-  const io = new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(!e.isIntersecting) return;
-      const el = e.target;
-      const target = parseFloat(el.dataset.target);
-      const suffix = el.dataset.suffix || '';
-      const isFloat = el.dataset.float === 'true';
-      const duration = 1800;
-      const start = performance.now();
-      function step(now){
-        const progress = Math.min((now-start)/duration,1);
-        const ease = 1-Math.pow(1-progress,4);
-        const val = isFloat ? (target*ease).toFixed(1) : Math.floor(target*ease);
-        el.textContent = val + suffix;
-        if(progress < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-      io.unobserve(el);
-    });
-  },{threshold:0.5});
-  counters.forEach(c=>io.observe(c));
-})();
-
-/* ── FAQ ── */
-(function(){
-  document.querySelectorAll('.faq-question').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      const item = this.closest('.faq-item');
-      const answer = item.querySelector('.faq-answer');
-      const isOpen = item.classList.contains('open');
-      document.querySelectorAll('.faq-item').forEach(el=>{
-        el.classList.remove('open');
-        el.querySelector('.faq-answer').style.maxHeight='0';
-        el.querySelector('.faq-question').setAttribute('aria-expanded','false');
-      });
-      if(!isOpen){
-        item.classList.add('open');
-        answer.style.maxHeight = answer.scrollHeight+'px';
-        this.setAttribute('aria-expanded','true');
-      }
-    });
-  });
-})();
-
-/* ── LIGHTBOX ── */
-function openLightbox(src){
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeLightbox(e){
-  if(!e || e.target===document.getElementById('lightbox') || e.target.classList.contains('lightbox-close')){
-    document.getElementById('lightbox').classList.remove('active');
-    document.body.style.overflow = '';
-  }
-}
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeLightbox({target:document.getElementById('lightbox')}); });
-
-/* ── REVIEWS SYSTEM ── */
-const AVATAR_GRADIENTS = [
-  'linear-gradient(135deg,#7c4dff,#c4a8ff)',
-  'linear-gradient(135deg,#a855f7,#7c4dff)',
-  'linear-gradient(135deg,#6d28d9,#9b6bff)',
-  'linear-gradient(135deg,#8b5cf6,#c4a8ff)',
-  'linear-gradient(135deg,#7c3aed,#a78bfa)',
-  'linear-gradient(135deg,#5b21b6,#9b6bff)'
-];
-
-function getInitials(name){
-  return name.trim().split(/\s+/).map(w=>w[0].toUpperCase()).slice(0,2).join('');
-}
-
-function buildReviewCard(review, index){
-  const grad = AVATAR_GRADIENTS[index % AVATAR_GRADIENTS.length];
-  const stars = '★'.repeat(review.stars) + '☆'.repeat(5-review.stars);
-  const div = document.createElement('div');
-  div.className = 'review-card';
-  div.style.animationDelay = (index * 0.07)+'s';
-  div.innerHTML = `
-    <div class="review-header">
-      <div class="review-avatar" style="background:${grad}">${getInitials(review.name)}</div>
-      <div class="review-meta">
-        <span class="review-name">${review.name}</span>
-        <span class="review-stars" style="color:#f5c842">${stars}</span>
-      </div>
-    </div>
-    <p class="review-text">${review.comment}</p>`;
-  return div;
-}
-
-function loadStoredReviews(){
-  try {
-    const stored = JSON.parse(localStorage.getItem('sv_reviews') || '[]');
-    const grid = document.getElementById('reviews-grid');
-    stored.forEach((r, i)=>{
-      grid.appendChild(buildReviewCard(r, 6 + i));
-    });
-  } catch(e){}
-}
-
-function submitReview(){
-  const name    = document.getElementById('review-name').value.trim();
-  const comment = document.getElementById('review-comment').value.trim();
-  const starEl  = document.querySelector('input[name="stars"]:checked');
-
-  let valid = true;
-  document.querySelectorAll('.form-error').forEach(e=>e.classList.remove('show'));
-
-  if(!name){ document.getElementById('err-name').classList.add('show'); valid=false; }
-  if(!starEl){ document.getElementById('err-stars').classList.add('show'); valid=false; }
-  if(comment.length < 10){ document.getElementById('err-comment').classList.add('show'); valid=false; }
-  if(!valid) return;
-
-  const review = { name, stars: parseInt(starEl.value), comment };
-
-  try {
-    const stored = JSON.parse(localStorage.getItem('sv_reviews') || '[]');
-    stored.push(review);
-    localStorage.setItem('sv_reviews', JSON.stringify(stored));
-  } catch(e){}
-
-  const grid = document.getElementById('reviews-grid');
-  const card = buildReviewCard(review, grid.children.length);
-  grid.appendChild(card);
-
-  // Reset
-  document.getElementById('review-name').value = '';
-  document.getElementById('review-comment').value = '';
-  document.querySelectorAll('input[name="stars"]').forEach(r=>r.checked=false);
-  document.getElementById('form-success').classList.add('show');
-  setTimeout(()=>document.getElementById('form-success').classList.remove('show'), 4000);
-
-  card.scrollIntoView({behavior:'smooth', block:'center'});
-}
-
-loadStoredReviews();
 </script>
 </body>
 </html>
