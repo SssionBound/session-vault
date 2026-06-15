@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidad – SessionVault</title>
+  <link rel="icon" type="image/png" href="icon128.png">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --purple-dark:   #120b2f;
+      --purple-accent: #7c4dff;
+      --purple-light:  #9b6bff;
+      --glass-bg:      rgba(255,255,255,0.06);
+      --glass-border:  rgba(255,255,255,0.12);
+      --text-main:     #f0eeff;
+      --text-muted:    #b8b0d8;
+      --text-dim:      #7a7299;
+    }
+
+    body {
+      background: var(--purple-dark);
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky; top: 0; z-index: 1000;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 60px;
+      background: rgba(10,8,28,0.75);
+      backdrop-filter: blur(24px); border-bottom: 1px solid var(--glass-border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 22px; font-weight: 800; color: var(--text-main); text-decoration: none;
+    }
+    .logo-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--purple-accent); box-shadow: 0 0 10px var(--purple-accent);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform:scale(1); box-shadow: 0 0 8px var(--purple-accent); }
+      50%      { transform:scale(1.4); box-shadow: 0 0 18px var(--purple-light); }
+    }
+    .nav-back {
+      color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;
+      padding: 8px 18px; border-radius: 8px; border: 1px solid var(--glass-border);
+      transition: color 0.25s, background 0.25s, border-color 0.25s;
+    }
+    .nav-back:hover { color: var(--text-main); background: var(--glass-bg); border-color: rgba(155,107,255,0.35); }
+
+    /* CONTENT */
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 800px; margin: 0 auto; padding: 80px 24px 120px;
+    }
+
+    .page-header { text-align: center; margin-bottom: 60px; }
+
+    .page-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px; border-radius: 100px;
+      background: rgba(124,77,255,0.15); border: 1px solid rgba(124,77,255,0.35);
+      font-size: 13px; color: var(--purple-light); font-weight: 600;
+      letter-spacing: 0.5px; margin-bottom: 28px;
+    }
+
+    .page-title {
+      font-size: clamp(32px,5vw,56px); font-weight: 900;
+      letter-spacing: -1.5px; line-height: 1.1;
+      background: linear-gradient(135deg,#fff 30%,#c4a8ff 70%,#7c4dff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 14px;
+    }
+
+    .page-date { color: var(--text-dim); font-size: 14px; }
+
+    /* CARD */
+    .doc-card {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 24px; backdrop-filter: blur(16px);
+      padding: 52px 56px; display: flex; flex-direction: column; gap: 48px;
+    }
+
+    .doc-section { display: flex; flex-direction: column; gap: 14px; }
+
+    .doc-section-header {
+      display: flex; align-items: center; gap: 14px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--glass-border);
+    }
+
+    .doc-icon {
+      width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+      background: rgba(124,77,255,0.18); border: 1px solid rgba(124,77,255,0.3);
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+
+    .doc-section h2 {
+      font-size: 19px; font-weight: 700; color: var(--text-main);
+    }
+
+    .doc-section p {
+      color: var(--text-muted); font-size: 15px; line-height: 1.85;
+    }
+
+    .doc-highlight {
+      background: rgba(124,77,255,0.10); border: 1px solid rgba(124,77,255,0.22);
+      border-radius: 12px; padding: 18px 22px;
+      color: var(--purple-light); font-size: 14px; font-weight: 500; line-height: 1.7;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+
+    /* FOOTER */
+    .page-footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--glass-border);
+      background: rgba(10,8,28,0.5); backdrop-filter: blur(12px);
+      padding: 24px; text-align: center;
+      color: var(--text-dim); font-size: 13px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+    }
+    .page-footer a { color: var(--text-dim); text-decoration: none; transition: color 0.25s; }
+    .page-footer a:hover { color: var(--purple-light); }
+    .footer-sep { color: var(--glass-border); }
+
+    @media (max-width: 768px) {
+      .navbar { padding: 14px 20px; }
+      .doc-card { padding: 32px 22px; gap: 36px; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <span class="logo-dot"></span>SessionVault
+  </a>
+  <a href="index.html" class="nav-back">← Volver al inicio</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="page-badge">🔒 Legal</div>
+    <h1 class="page-title">Política de Privacidad</h1>
+    <p class="page-date">Última actualización: 2026</p>
+  </div>
+
+  <div class="doc-card">
+
+    <div class="doc-highlight">
+      💜 SessionVault está diseñada con la privacidad como principio fundamental. No recopilamos, almacenamos ni compartimos ningún dato personal.
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">📋</div>
+        <h2>Información recopilada</h2>
+      </div>
+      <p>SessionVault no recopila información personal identificable de ningún tipo. No tienes que crear una cuenta, no pedimos tu nombre, correo electrónico ni ningún otro dato. La extensión funciona de forma completamente anónima.</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">💾</div>
+        <h2>Almacenamiento local</h2>
+      </div>
+      <p>Las sesiones guardadas se almacenan únicamente en el navegador del usuario mediante <code style="background:rgba(124,77,255,0.15);padding:2px 7px;border-radius:5px;font-size:13px;">chrome.storage.local</code>. Estos datos nunca salen de tu dispositivo. Desinstalar la extensión elimina todos los datos almacenados.</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">🤝</div>
+        <h2>Compartición de datos</h2>
+      </div>
+      <p>SessionVault no vende, alquila ni comparte ningún dato con terceros. No existe ninguna integración con plataformas de análisis, publicidad ni redes sociales. Tus datos son exclusivamente tuyos.</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">🌐</div>
+        <h2>Servicios externos</h2>
+      </div>
+      <p>SessionVault no utiliza servicios externos de ningún tipo para recopilar información de los usuarios. No hay llamadas a APIs de terceros, ni telemetría, ni rastreo de uso. La extensión funciona íntegramente en tu navegador.</p>
+    </div>
+
+    <div class="doc-section">
+      <div class="doc-section-header">
+        <div class="doc-icon">🔄</div>
+        <h2>Cambios en esta política</h2>
+      </div>
+      <p>Esta política puede actualizarse en futuras versiones de SessionVault. Cualquier cambio relevante se comunicará a través de la página oficial del proyecto en la Chrome Web Store. Te recomendamos revisar esta página periódicamente.</p>
+    </div>
+
+  </div>
+</div>
+
+<footer class="page-footer">
+  <span>© 2026 SessionVault</span>
+  <span class="footer-sep">·</span>
+  <a href="privacy.html">Política de privacidad</a>
+  <span class="footer-sep">·</span>
+  <a href="terms.html">Términos de uso</a>
+  <span class="footer-sep">·</span>
+  <a href="index.html">Volver al inicio</a>
+</footer>
+
+<script>
+(function(){
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  const COLORS = ['rgba(124,77,255,','rgba(155,107,255,','rgba(200,170,255,'];
+  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+  function P(){ this.reset(); }
+  P.prototype.reset=function(){ this.x=Math.random()*W; this.y=Math.random()*H; this.r=Math.random()*2+0.5; this.vx=(Math.random()-0.5)*0.3; this.vy=(Math.random()-0.5)*0.3; this.alpha=Math.random()*0.4+0.1; this.color=COLORS[Math.floor(Math.random()*COLORS.length)]; };
+  P.prototype.update=function(){ this.x+=this.vx; this.y+=this.vy; if(this.x<-10||this.x>W+10||this.y<-10||this.y>H+10)this.reset(); };
+  P.prototype.draw=function(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=this.color+this.alpha+')'; ctx.fill(); };
+  const orbs=[{x:0.1,y:0.2,r:250,c:'rgba(124,77,255,'},{x:0.9,y:0.8,r:200,c:'rgba(155,107,255,'}];
+  function drawOrbs(){ orbs.forEach(o=>{ const g=ctx.createRadialGradient(o.x*W,o.y*H,0,o.x*W,o.y*H,o.r); g.addColorStop(0,o.c+'0.09)'); g.addColorStop(1,o.c+'0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }); }
+  resize();
+  for(let i=0;i<60;i++) particles.push(new P());
+  function loop(){ ctx.clearRect(0,0,W,H); drawOrbs(); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(loop); }
+  loop();
+  window.addEventListener('resize',resize);
+})();
+</script>
+</body>
+</html>
